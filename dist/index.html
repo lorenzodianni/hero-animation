@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Test</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<style>
+    * {margin: 0; padding: 0; box-sizing: border-box}
+    app-root {
+        height: 100vh;
+    }
+    .view, main {
+        position: relative;
+        height: 100vh;
+    }
+
+
+    .title--one, .title--two, .title--three,
+    .polymer--one, .polymer--two, .polymer--three {
+        position: absolute;
+    }
+    .title--one {
+        top: 50px;
+        left: 0;
+        width: 100px;
+        background: deepskyblue;
+    }
+    .title--two {
+        top: 50px;
+        left: 100px;
+        width: 200px;
+        background: lightyellow;
+    }
+    .title--three {
+        top: 450px;
+        left: 200px;
+        width: 150px;
+        height: 150px;
+        background: hotpink;
+    }
+    .polymer--one {
+        top: 50%;
+        left: 0;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: deepskyblue;
+    }
+    .polymer--two {
+        top: 50%;
+        left: 50%;
+        width: 200px;
+        height: 200px;
+        background: lightyellow;
+    }
+    .polymer--three {
+        top: 10%;
+        left: 10%;
+        width: 150px;
+        height: 10px;
+        background: hotpink;
+    }
+</style>
+<body>
+<app-root></app-root>
+<script src="./main.js"></script>
+</body>
+</html>
