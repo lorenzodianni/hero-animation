@@ -86,6 +86,54 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "../core/animator.js":
+/*!***************************!*\
+  !*** ../core/animator.js ***!
+  \***************************/
+/*! exports provided: Animator */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Animator\", function() { return Animator; });\n/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common */ \"../core/common.js\");\n\n\nclass Animator {\n\n  constructor(fromElement, toElement, fromView, toView) {\n    this.fromElement = fromElement;\n    this.toElement = toElement;\n    this.fromView = fromView;\n    this.toView = toView;\n    this.done = this.done.bind(this);\n    this.cloneElement();\n  }\n\n  cloneElement() {\n    this._fromRect = Object(_common__WEBPACK_IMPORTED_MODULE_0__[\"getScreenRect\"])(this.fromElement, this.fromView);\n    this._clonedElement = this.fromElement.cloneNode(true);\n    this.fromView.parentNode.appendChild(this._clonedElement);\n    Object(_common__WEBPACK_IMPORTED_MODULE_0__[\"css\"])(this._clonedElement, {\n      top: `${this._fromRect.top}px`,\n      left: `${this._fromRect.left}px`,\n      width: `${this._fromRect.width}px`,\n      height: `${this._fromRect.height}px`,\n      margin: '0',\n    });\n    Object(_common__WEBPACK_IMPORTED_MODULE_0__[\"css\"])(this.fromElement, {visibility: 'hidden'});\n    Object(_common__WEBPACK_IMPORTED_MODULE_0__[\"css\"])(this.toElement, {visibility: 'hidden'});\n  }\n\n  done() {\n    if (!this.complete) {\n      this.complete = true;\n      typeof this._resolve === 'function' && this._resolve();\n    }\n  }\n\n  move() {\n    return new Promise((resolve) => {\n      this._resolve = resolve;\n      const toRect = Object(_common__WEBPACK_IMPORTED_MODULE_0__[\"getScreenRect\"])(this.toElement, this.toView);\n      Object(_common__WEBPACK_IMPORTED_MODULE_0__[\"css\"])(this._clonedElement, {\n        transform: `translate3d(${toRect.left - this._fromRect.left}px, ${toRect.top - this._fromRect.top}px, 0)`,\n        width: `${toRect.width}px`,\n        height: `${toRect.height}px`,\n      });\n      // Switch the animating element to the target's classes, which allows us\n      // to animate other properties like color, border, corners, etc.\n      this._clonedElement.setAttribute('class', `${this.toElement.getAttribute('class')} hero-animation__animator`);\n      this._clonedElement.addEventListener('transitionend', this.done);\n    });\n  }\n\n  destroy() {\n    Object(_common__WEBPACK_IMPORTED_MODULE_0__[\"css\"])(this.toElement, {visibility: ''});\n    this._clonedElement.removeEventListener('transitionend', this.done);\n    this._clonedElement.remove();\n    for (const prop in this) {\n      if (this.hasOwnProperty(prop)) {\n        this[prop] = null;\n      }\n    }\n  }\n}\n\n//# sourceURL=webpack:///../core/animator.js?");
+
+/***/ }),
+
+/***/ "../core/common.js":
+/*!*************************!*\
+  !*** ../core/common.js ***!
+  \*************************/
+/*! exports provided: getScreenRect, css, ensureFunction */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"getScreenRect\", function() { return getScreenRect; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"css\", function() { return css; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"ensureFunction\", function() { return ensureFunction; });\nfunction getScreenRect(element, view) {\n  const elementRect = element ? element.getBoundingClientRect() : {};\n  const viewRect = view ? view.getBoundingClientRect() : {};\n  return {\n    top: elementRect.top - viewRect.top,\n    left: elementRect.left - viewRect.left,\n    width: elementRect.width,\n    height: elementRect.height\n  };\n}\n\nfunction css(element, style) {\n  for (const prop in style) {\n    if (style.hasOwnProperty(prop)) {\n      element.style[prop] = style[prop];\n    }\n  }\n  return element;\n}\n\nfunction ensureFunction(fn) {\n  return fn && typeof fn === 'function' ? fn : () => {\n  };\n}\n\n//# sourceURL=webpack:///../core/common.js?");
+
+/***/ }),
+
+/***/ "../core/hero-animation.js":
+/*!*********************************!*\
+  !*** ../core/hero-animation.js ***!
+  \*********************************/
+/*! exports provided: HERO_SELECTOR, HeroAnimation */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"HERO_SELECTOR\", function() { return HERO_SELECTOR; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"HeroAnimation\", function() { return HeroAnimation; });\n/* harmony import */ var _animator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animator */ \"../core/animator.js\");\n/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./common */ \"../core/common.js\");\n\n\n\nconst HERO_SELECTOR = 'hero-id';\n\nclass HeroAnimation {\n\n  constructor({onInit, onAnimationStart, onAnimationEnd, onDestroy} = {}) {\n    this.onInit = Object(_common__WEBPACK_IMPORTED_MODULE_1__[\"ensureFunction\"])(onInit);\n    this.onAnimationStart = Object(_common__WEBPACK_IMPORTED_MODULE_1__[\"ensureFunction\"])(onAnimationStart);\n    this.onAnimationEnd = Object(_common__WEBPACK_IMPORTED_MODULE_1__[\"ensureFunction\"])(onAnimationEnd);\n    this.onDestroy = Object(_common__WEBPACK_IMPORTED_MODULE_1__[\"ensureFunction\"])(onDestroy);\n    this.init();\n    this.onInit();\n  }\n\n  init() {\n    this.isRunningPrevAnimation = false;\n    this.fromView = null;\n    this.toView = null;\n    this.animatorList = [];\n  }\n\n  destroy() {\n    this.animatorList.forEach(animator => animator.destroy());\n    this.init();\n    this.onDestroy();\n  }\n\n  animate(from, to) {\n    if (this.isRunningPrevAnimation) {\n      this.destroy();\n    }\n    this.fromView = from;\n    this.toView = to;\n    return this.startHeroAnimation()\n      .then(() => this.destroy())\n      .catch(() => this.destroy());\n  }\n\n  startHeroAnimation() {\n    this.isRunningPrevAnimation = true;\n    this.onAnimationStart();\n    const from = this.fromView.querySelectorAll(`[${HERO_SELECTOR}]`);\n    const to = this.toView.querySelectorAll(`[${HERO_SELECTOR}]`);\n    const pairs = [];\n    for (let n = 0; n < from.length; n++) {\n      for (let m = 0; m < to.length; m++) {\n        if (from[n].getAttribute(HERO_SELECTOR) === to[m].getAttribute(HERO_SELECTOR)) {\n          pairs.push({from: from[n], to: to[m]});\n        }\n      }\n    }\n    const animations = pairs.map(pair => this.animateElement(pair.from, pair.to));\n    return Promise.all(animations).then(() => this.onAnimationEnd());\n  }\n\n  animateElement(fromElement, toElement) {\n    return new Promise((resolve) => {\n      const animator = new _animator__WEBPACK_IMPORTED_MODULE_0__[\"Animator\"](fromElement, toElement, this.fromView, this.toView);\n      this.animatorList.push(animator);\n      requestAnimationFrame(() => {\n        animator.move().then(() => resolve());\n      });\n    })\n  }\n}\n\n//# sourceURL=webpack:///../core/hero-animation.js?");
+
+/***/ }),
+
+/***/ "../core/index.js":
+/*!************************!*\
+  !*** ../core/index.js ***!
+  \************************/
+/*! exports provided: Animator, HERO_SELECTOR, HeroAnimation, getScreenRect, css, ensureFunction */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _animator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animator */ \"../core/animator.js\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"Animator\", function() { return _animator__WEBPACK_IMPORTED_MODULE_0__[\"Animator\"]; });\n\n/* harmony import */ var _hero_animation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./hero-animation */ \"../core/hero-animation.js\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"HERO_SELECTOR\", function() { return _hero_animation__WEBPACK_IMPORTED_MODULE_1__[\"HERO_SELECTOR\"]; });\n\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"HeroAnimation\", function() { return _hero_animation__WEBPACK_IMPORTED_MODULE_1__[\"HeroAnimation\"]; });\n\n/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./common */ \"../core/common.js\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"getScreenRect\", function() { return _common__WEBPACK_IMPORTED_MODULE_2__[\"getScreenRect\"]; });\n\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"css\", function() { return _common__WEBPACK_IMPORTED_MODULE_2__[\"css\"]; });\n\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"ensureFunction\", function() { return _common__WEBPACK_IMPORTED_MODULE_2__[\"ensureFunction\"]; });\n\n\n\n\n\n//# sourceURL=webpack:///../core/index.js?");
+
+/***/ }),
+
 /***/ "./node_modules/@uirouter/angularjs/release/ui-router-angularjs.js":
 /*!*************************************************************************!*\
   !*** ./node_modules/@uirouter/angularjs/release/ui-router-angularjs.js ***!
@@ -1016,18 +1064,6 @@ eval("var g;\n\n// This works in non-strict mode\ng = (function() {\n\treturn th
 
 /***/ }),
 
-/***/ "./src/app/angular-hero.js":
-/*!*********************************!*\
-  !*** ./src/app/angular-hero.js ***!
-  \*********************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _hero_animation_hero_animation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../hero-animation/hero-animation */ \"./src/hero-animation/hero-animation.js\");\n\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (angular\n  .module('ngHeroAnimation', ['ngAnimate'])\n  .animation('.hero-animation', ['$animateCss', _hero_animation_hero_animation__WEBPACK_IMPORTED_MODULE_0__[\"HeroAnimation\"]])\n  .name);\n\n//# sourceURL=webpack:///./src/app/angular-hero.js?");
-
-/***/ }),
-
 /***/ "./src/app/app.component.js":
 /*!**********************************!*\
   !*** ./src/app/app.component.js ***!
@@ -1048,7 +1084,7 @@ eval("__webpack_require__.r(__webpack_exports__);\nconst template = `\n<style>\n
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! angular */ \"./node_modules/angular/index.js\");\n/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(angular__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _uirouter_angularjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uirouter/angularjs */ \"./node_modules/@uirouter/angularjs/release/ui-router-angularjs.js\");\n/* harmony import */ var _uirouter_angularjs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_uirouter_angularjs__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var angular_animate__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! angular-animate */ \"./node_modules/angular-animate/index.js\");\n/* harmony import */ var angular_animate__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(angular_animate__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _angular_hero__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./angular-hero */ \"./src/app/angular-hero.js\");\n/* harmony import */ var _module_one_module_one_module__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./module-one/module-one.module */ \"./src/app/module-one/module-one.module.js\");\n/* harmony import */ var _module_two_module_two_module__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./module-two/module-two.module */ \"./src/app/module-two/module-two.module.js\");\n/* harmony import */ var _module_three_module_three_module__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./module-three/module-three.module */ \"./src/app/module-three/module-three.module.js\");\n/* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./app.component */ \"./src/app/app.component.js\");\n\n\n\n\n\n\n\n\n\n\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (angular__WEBPACK_IMPORTED_MODULE_0__[\"module\"]('AppModule', [\n    _uirouter_angularjs__WEBPACK_IMPORTED_MODULE_1___default.a,\n    angular_animate__WEBPACK_IMPORTED_MODULE_2___default.a,\n    _angular_hero__WEBPACK_IMPORTED_MODULE_3__[\"default\"],\n    _module_one_module_one_module__WEBPACK_IMPORTED_MODULE_4__[\"default\"],\n    _module_two_module_two_module__WEBPACK_IMPORTED_MODULE_5__[\"default\"],\n    _module_three_module_three_module__WEBPACK_IMPORTED_MODULE_6__[\"default\"],\n  ])\n  .config(['$urlRouterProvider', '$compileProvider', ($urlRouterProvider, $compileProvider) => {\n    $urlRouterProvider.otherwise('/module-one');\n    $compileProvider.debugInfoEnabled(false);\n  }])\n  .component('appRoot', _app_component__WEBPACK_IMPORTED_MODULE_7__[\"default\"])\n  .name);\n\n//# sourceURL=webpack:///./src/app/app.module.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! angular */ \"./node_modules/angular/index.js\");\n/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(angular__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _uirouter_angularjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @uirouter/angularjs */ \"./node_modules/@uirouter/angularjs/release/ui-router-angularjs.js\");\n/* harmony import */ var _uirouter_angularjs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_uirouter_angularjs__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var angular_animate__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! angular-animate */ \"./node_modules/angular-animate/index.js\");\n/* harmony import */ var angular_animate__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(angular_animate__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _ng_hero_animation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../ng-hero-animation */ \"./src/ng-hero-animation.js\");\n/* harmony import */ var _module_one_module_one_module__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./module-one/module-one.module */ \"./src/app/module-one/module-one.module.js\");\n/* harmony import */ var _module_two_module_two_module__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./module-two/module-two.module */ \"./src/app/module-two/module-two.module.js\");\n/* harmony import */ var _module_three_module_three_module__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./module-three/module-three.module */ \"./src/app/module-three/module-three.module.js\");\n/* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./app.component */ \"./src/app/app.component.js\");\n\n\n\n\n\n\n\n\n\n\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (angular__WEBPACK_IMPORTED_MODULE_0__[\"module\"]('AppModule', [\n    _uirouter_angularjs__WEBPACK_IMPORTED_MODULE_1___default.a,\n    angular_animate__WEBPACK_IMPORTED_MODULE_2___default.a,\n    _ng_hero_animation__WEBPACK_IMPORTED_MODULE_3__[\"default\"],\n    _module_one_module_one_module__WEBPACK_IMPORTED_MODULE_4__[\"default\"],\n    _module_two_module_two_module__WEBPACK_IMPORTED_MODULE_5__[\"default\"],\n    _module_three_module_three_module__WEBPACK_IMPORTED_MODULE_6__[\"default\"],\n  ])\n  .config(['$urlRouterProvider', '$compileProvider', ($urlRouterProvider, $compileProvider) => {\n    $urlRouterProvider.otherwise('/module-one');\n    $compileProvider.debugInfoEnabled(false);\n  }])\n  .component('appRoot', _app_component__WEBPACK_IMPORTED_MODULE_7__[\"default\"])\n  .name);\n\n//# sourceURL=webpack:///./src/app/app.module.js?");
 
 /***/ }),
 
@@ -1124,30 +1160,6 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var angu
 
 /***/ }),
 
-/***/ "./src/hero-animation/animator.js":
-/*!****************************************!*\
-  !*** ./src/hero-animation/animator.js ***!
-  \****************************************/
-/*! exports provided: Animator */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Animator\", function() { return Animator; });\nclass Animator {\n\n  static getScreenRect(element, view) {\n    const elementRect = element ? element.getBoundingClientRect() : {};\n    const viewRect = view ? view.getBoundingClientRect() : {};\n    return {\n      top: elementRect.top - viewRect.top,\n      left: elementRect.left - viewRect.left,\n      width: elementRect.width,\n      height: elementRect.height\n    };\n  }\n\n  static css(element, style) {\n    for (const prop in style) {\n      if (style.hasOwnProperty(prop)) {\n        element.style[prop] = style[prop];\n      }\n    }\n    return element;\n  }\n\n  constructor(fromElement, toElement, fromView, toView) {\n    this.fromElement = fromElement;\n    this.toElement = toElement;\n    this.fromView = fromView;\n    this.toView = toView;\n    this.done = this.done.bind(this);\n    this.cloneElement();\n  }\n\n  cloneElement() {\n    this._fromRect = Animator.getScreenRect(this.fromElement, this.fromView);\n    this._clonedElement = this.fromElement.cloneNode(true);\n    this.fromView.parentNode.appendChild(this._clonedElement);\n    Animator.css(this._clonedElement, {\n      top: `${this._fromRect.top}px`,\n      left: `${this._fromRect.left}px`,\n      width: `${this._fromRect.width}px`,\n      height: `${this._fromRect.height}px`,\n      margin: '0',\n    });\n    Animator.css(this.fromElement, {visibility: 'hidden'});\n    Animator.css(this.toElement, {visibility: 'hidden'});\n  }\n\n  done() {\n    if (!this.complete) {\n      this.complete = true;\n      typeof this._resolve === 'function' && this._resolve();\n    }\n  }\n\n  move() {\n    return new Promise((resolve) => {\n      this._resolve = resolve;\n      const toRect = Animator.getScreenRect(this.toElement, this.toView);\n      Animator.css(this._clonedElement, {\n        transform: `translate3d(${toRect.left - this._fromRect.left}px, ${toRect.top - this._fromRect.top}px, 0)`,\n        width: `${toRect.width}px`,\n        height: `${toRect.height}px`,\n      });\n      // Switch the animating element to the target's classes, which allows us\n      // to animate other properties like color, border, corners, etc.\n      this._clonedElement.setAttribute('class', `${this.toElement.getAttribute('class')} hero-animation__animator`);\n      this._clonedElement.addEventListener('transitionend', this.done);\n    });\n  }\n\n  destroy() {\n    Animator.css(this.toElement, {visibility: ''});\n    this._clonedElement.removeEventListener('transitionend', this.done);\n    this._clonedElement.remove();\n    for (const prop in this) {\n      if (this.hasOwnProperty(prop)) {\n        this[prop] = null;\n      }\n    }\n  }\n}\n\n//# sourceURL=webpack:///./src/hero-animation/animator.js?");
-
-/***/ }),
-
-/***/ "./src/hero-animation/hero-animation.js":
-/*!**********************************************!*\
-  !*** ./src/hero-animation/hero-animation.js ***!
-  \**********************************************/
-/*! exports provided: HeroAnimation */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"HeroAnimation\", function() { return HeroAnimation; });\n/* harmony import */ var _animator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./animator */ \"./src/hero-animation/animator.js\");\n\n\nclass HeroAnimation {\n\n  static get ENTER() {\n    return 'enter';\n  }\n\n  static get LEAVE() {\n    return 'leave';\n  }\n\n  static get SELECTOR() {\n    return 'hero-id';\n  }\n\n  constructor($animateCss) {\n    this.$animateCss = $animateCss;\n    this.resetHeroAnimation();\n    this.enter = this.heroAnimation(HeroAnimation.ENTER);\n    this.leave = this.heroAnimation(HeroAnimation.LEAVE);\n  }\n\n  resetHeroAnimation() {\n    this.isRunningPrevAnimation = false;\n    this.fromView = null;\n    this.toView = null;\n    if (this.doneFnList) {\n      this.doneFnList.forEach(doneFn => doneFn());\n    }\n    if (this.animatorList) {\n      this.animatorList.forEach(animator => animator.destroy());\n    }\n    this.doneFnList = [];\n    this.animatorList = [];\n  }\n\n  heroAnimation(eventType) {\n    return (element, doneFn) => {\n      if (this.isRunningPrevAnimation) {\n        this.resetHeroAnimation()\n      }\n      this.$animateCss(element, {event: eventType, structural: true}).start();\n      this.doneFnList.push(doneFn);\n      return this.setViewType(eventType, element[0])\n        .then(() => this.startHeroAnimation())\n        .finally(() => this.resetHeroAnimation());\n    }\n  }\n\n  setViewType(eventType, element) {\n    return new Promise((resolve) => {\n      if (eventType === HeroAnimation.ENTER) {\n        this.toView = element;\n      } else {\n        this.fromView = element;\n      }\n      this.toView && this.fromView && resolve();\n    });\n  }\n\n  startHeroAnimation() {\n    this.isRunningPrevAnimation = true;\n    const from = this.fromView.querySelectorAll(`[${HeroAnimation.SELECTOR}]`);\n    const to = this.toView.querySelectorAll(`[${HeroAnimation.SELECTOR}]`);\n    const pairs = [];\n    for (let n = 0; n < from.length; n++) {\n      for (let m = 0; m < to.length; m++) {\n        if (from[n].getAttribute(HeroAnimation.SELECTOR) === to[m].getAttribute(HeroAnimation.SELECTOR)) {\n          pairs.push({from: from[n], to: to[m]});\n        }\n      }\n    }\n    const animations = pairs.map(pair => this.animateElement(pair.from, pair.to));\n    return Promise.all(animations);\n  }\n\n  animateElement(fromElement, toElement) {\n    return new Promise((resolve) => {\n      const animator = new _animator__WEBPACK_IMPORTED_MODULE_0__[\"Animator\"](fromElement, toElement, this.fromView, this.toView);\n      this.animatorList.push(animator);\n      requestAnimationFrame(() => animator.move().then(resolve));\n    })\n  }\n}\n\n//# sourceURL=webpack:///./src/hero-animation/hero-animation.js?");
-
-/***/ }),
-
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -1157,6 +1169,18 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 
 "use strict";
 eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! angular */ \"./node_modules/angular/index.js\");\n/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(angular__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _app_app_module__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./app/app.module */ \"./src/app/app.module.js\");\n\n\n\nangular__WEBPACK_IMPORTED_MODULE_0___default.a.element(document).ready(() => {\n  angular__WEBPACK_IMPORTED_MODULE_0___default.a.bootstrap(document, [_app_app_module__WEBPACK_IMPORTED_MODULE_1__[\"default\"]], {strictDi: true})\n});\n\n//# sourceURL=webpack:///./src/index.js?");
+
+/***/ }),
+
+/***/ "./src/ng-hero-animation.js":
+/*!**********************************!*\
+  !*** ./src/ng-hero-animation.js ***!
+  \**********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../core */ \"../core/index.js\");\n\n\nconst NG_ENTER = 'enter';\nconst NG_LEAVE = 'leave';\n\nclass NgHeroAnimation {\n\n  constructor($animateCss) {\n    this.heroAnimation = new _core__WEBPACK_IMPORTED_MODULE_0__[\"HeroAnimation\"]({\n      onInit: () => this._onInit(),\n      onDestroy: () => this._onDestroy(),\n    });\n    this.$animateCss = $animateCss;\n    this.leave = this._prepare(NG_LEAVE);\n    this.enter = this._prepare(NG_ENTER);\n  }\n\n  _onInit() {\n    this.doneFnList = [];\n  }\n\n  _onDestroy() {\n    this.doneFnList.forEach(doneFn => doneFn());\n    this.doneFnList = [];\n    this.from = null;\n    this.to = null;\n  }\n\n  _prepare(eventType) {\n    return (element, doneFn) => {\n      if (this.heroAnimation.isRunningPrevAnimation) {\n        this.heroAnimation.destroy();\n      }\n      this.$animateCss(element, {event: eventType, structural: true}).start();\n      this.doneFnList.push(doneFn);\n      return this._waitBothViews(eventType, element[0]).then(() => {\n        return this.heroAnimation.animate(this.from, this.to);\n      })\n    }\n  }\n\n  _waitBothViews(eventType, element) {\n    return new Promise((resolve) => {\n      if (eventType === NG_LEAVE) {\n        this.from = element;\n      } else {\n        this.to = element;\n      }\n      if (this.from && this.to) {\n        resolve();\n      }\n    });\n  }\n}\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (angular\n  .module('ngHeroAnimation', ['ngAnimate'])\n  .animation('.hero-animation', ['$animateCss', NgHeroAnimation])\n  .name);\n\n//# sourceURL=webpack:///./src/ng-hero-animation.js?");
 
 /***/ })
 

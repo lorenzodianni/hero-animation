@@ -1,7 +1,7 @@
 import * as angular from 'angular';
 import uiRouter from '@uirouter/angularjs';
 import ngAnimate from 'angular-animate';
-import ngHero from './angular-hero';
+import ngHeroAnimation from './../ng-hero-animation';
 
 import ModuleOne from './module-one/module-one.module';
 import ModuleTwo from './module-two/module-two.module';
@@ -13,7 +13,7 @@ export default angular
   .module('AppModule', [
     uiRouter,
     ngAnimate,
-    ngHero,
+    ngHeroAnimation,
     ModuleOne,
     ModuleTwo,
     ModuleThree,

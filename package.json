@@ -1,21 +1,6 @@
 {
-  "name": "test",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "webpack --mode=development -w & live-server dist"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@uirouter/angularjs": "^1.0.19",
-    "angular": "^1.7.2",
-    "angular-animate": "^1.7.2"
-  },
-  "devDependencies": {
-    "live-server": "^1.2.0",
-    "webpack": "^4.16.1",
-    "webpack-cli": "^3.1.0"
-  }
+  "name": "hero-animation",
+  "version": "0.1.0",
+  "author": "Lorenzo D'Ianni",
+  "license": "MIT"
 }
