@@ -1,13 +1,13 @@
-export function getScreenRect(element, view) {
-  const elementRect = element ? element.getBoundingClientRect() : {};
-  const viewRect = view ? view.getBoundingClientRect() : {};
-  return {
-    top: elementRect.top - viewRect.top,
-    left: elementRect.left - viewRect.left,
-    width: elementRect.width,
-    height: elementRect.height
-  };
-}
+// export function getScreenRect(element, view) {
+//   const elementRect = element ? element.getBoundingClientRect() : {};
+//   const viewRect = view ? view.getBoundingClientRect() : {};
+//   return {
+//     top: elementRect.top - viewRect.top,
+//     left: elementRect.left - viewRect.left,
+//     width: elementRect.width,
+//     height: elementRect.height
+//   };
+// }
 
 export function css(element, style) {
   for (const prop in style) {
