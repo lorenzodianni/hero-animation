@@ -22,14 +22,40 @@ const template = `
     position: absolute;
     z-index: 10000;
 }
+.modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    height: 50%;
+    background-color: green;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.modal.ng-enter {
+  transition: opacity 500ms ease-out;
+  opacity: 0;
+}
+.modal.ng-enter.ng-enter-active {
+  opacity: 1;
+}
+.modal.ng-leave {
+  transition: opacity 500ms ease-out;
+  opacity: 1;
+}
+.modal.ng-leave.ng-leave-active {
+  opacity: 0;
+}
 </style>
-<header>
-  <nav>
-    <a ng-repeat="link in $ctrl.links" ui-sref="{{link.state}}">{{link.label}}</a>
-  </nav>
-</header>
 <main>
-    <div ui-view class="hero-animation"></div>
+  <header>
+    <nav>
+      <a ng-repeat="link in $ctrl.links" ui-sref="{{link.state}}">{{link.label}}</a>
+    </nav>
+  </header>
+  <div ui-view class="hero-animation"></div>
 </main>
 `;
 
