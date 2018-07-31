@@ -4,6 +4,7 @@ const NG_ENTER = 'enter';
 const NG_LEAVE = 'leave';
 
 class NgHeroAnimation {
+
   constructor($animateCss) {
     this.heroAnimation = new HeroAnimation({
       onInit: () => this._onInit(),
@@ -32,22 +33,9 @@ class NgHeroAnimation {
       }
       this.$animateCss(element, {event: eventType, structural: true}).start();
       this.doneFnList.push(doneFn);
-      // todo: trovare un modo per non fare if (modal) else (view)
-      if (this._isModal(element[0])) {
-        const viewElement = document.querySelector('div.hero-animation');
-        if (this._modalType(element[0]) === 'enter') {
-          this.from = viewElement;
-          this.to = element[0];
-        } else {
-          this.from = element[0];
-          this.to = viewElement;
-        }
+      return this._waitBothViews(eventType, element[0]).then(() => {
         return this.heroAnimation.animate(this.from, this.to);
-      } else {
-        return this._waitBothViews(eventType, element[0]).then(() => {
-          return this.heroAnimation.animate(this.from, this.to);
-        })
-      }
+      })
     }
   }
 
@@ -62,14 +50,6 @@ class NgHeroAnimation {
         resolve();
       }
     });
-  }
-
-  _isModal(element) {
-    return element.classList.contains('modal');
-  }
-
-  _modalType(element) {
-    return element.classList.contains('ng-leave') ? 'leave' : 'enter';
   }
 }
 
