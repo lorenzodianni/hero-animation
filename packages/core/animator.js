@@ -1,4 +1,4 @@
-import {css} from './common';
+import {getScreenRect, css} from './common';
 
 export class Animator {
 
@@ -12,7 +12,7 @@ export class Animator {
   }
 
   cloneElement() {
-    this._fromRect = this.fromElement.getBoundingClientRect();
+    this._fromRect = getScreenRect(this.fromElement, this.fromView);
     this._clonedElement = this.fromElement.cloneNode(true);
     this.fromView.parentNode.appendChild(this._clonedElement);
     css(this._clonedElement, {
@@ -36,7 +36,7 @@ export class Animator {
   move() {
     return new Promise((resolve) => {
       this._resolve = resolve;
-      const toRect = this.toElement.getBoundingClientRect();
+      const toRect = getScreenRect(this.toElement, this.toView);
       css(this._clonedElement, {
         transform: `translate3d(${toRect.left - this._fromRect.left}px, ${toRect.top - this._fromRect.top}px, 0)`,
         width: `${toRect.width}px`,
