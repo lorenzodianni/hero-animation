@@ -7,7 +7,7 @@ packages/**/**/*.js.map
 packages/**/**/package-lock.json
 
 packages/core/src/**/*.js
-packages/core/src/index.js
+packages/core/index.js
 
 # Logs
 logs
