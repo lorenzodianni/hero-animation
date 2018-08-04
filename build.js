@@ -1,43 +1,40 @@
-const colors = require('colors');
-const {lstatSync, readdirSync} = require('fs');
-const {join, basename} = require('path');
-const {spawn} = require('child_process');
+const {readdirSync} = require('fs');
+const {writeFileJSON, readFileJSON, exec, log, PACKAGES_PATH, isTypescriptFolder} = require('./build.common');
 
-colors.setTheme({
-  command: ['bold', 'gray'],
-  std: ['gray'],
-  start: ['bold', 'blue'],
-  end: ['bold', 'green'],
-});
+const updatePackageJson = (updates, input, output) => {
+  log.command('package.json');
+  const file = readFileJSON(`${input}/package.json`);
+  const base = readFileJSON('./package.json');
+  const edited = writeFileJSON(`${output}/package.json`, {
+    ...file,
+    ...updates.reduce((acc, key) => ({...acc, [key]: base[key]}), {}),
+  });
+  log.std(`updated: ${updates.join(', ')}`);
+  return edited;
+};
 
-const stringify = i => i instanceof Buffer ? i.toString('utf8').trim() : i.toString().trim();
-const bin = command => join(__dirname, `node_modules/.bin/${command}`);
-const isDirectory = source => lstatSync(source).isDirectory();
-const hasTypescript = source => readdirSync(source).some(file => file.endsWith('.ts'));
-const spawnPromise = (command, args) => () => new Promise((resolve) => {
-  const _process = spawn(command, args);
-  console.log(basename(command).command);
-  _process.stdout.on('data', data => console.log('    ' + stringify(data).std));
-  _process.stderr.on('data', data => console.log('    ' + stringify(data).std));
-  _process.on('close', data => resolve(data));
-});
+const createPackage = (name) => {
+  const lib = `./packages/${name}`;
+  const distLib = `./dist/${lib}`;
+  const tsc = exec('tsc', ['-p', lib]);
+  const rollup = exec('rollup', ['--config', `${lib}/rollup.config.js`]);
+  const dts = exec('dts-bundle-generator', ['-o', `${distLib}/${name}.d.ts`, `${lib}/index.d.ts`]);
+  return {
+    name,
+    compile: () => tsc()
+      .then(() => rollup())
+      .then(() => dts())
+      .then(() => updatePackageJson(['version', 'author'], lib, distLib))
+      .catch(e => log.info(e)),
+  }
+};
 
-
-const packages = readdirSync(join(__dirname, 'packages'))
-  .filter(dir => isDirectory(join('packages', dir)))
-  .filter(dir => hasTypescript(join('packages', dir)))
-  .reduce((acc, name) => {
-    const tsc = spawnPromise(bin('tsc'), ['-p', `./packages/${name}`]);
-    const rollup = spawnPromise(bin('rollup'), ['--config', `./packages/${name}/rollup.config.js`]);
-    const dts = spawnPromise(bin('dts-bundle-generator'), [
-      '-o',
-      `./dist/packages/${name}/${name}.d.ts`,
-      `./packages/${name}/index.d.ts`,
-    ]);
-    return [...acc, {name, compile: () => tsc().then(rollup).then(dts).catch(e => console.log(stringify(e)))}];
-  }, []);
-
-packages.forEach(p => {
-  console.log(`Generating ${p.name}...`.start);
-  p.compile().then(() => console.log(`Completed ${p.name} package`.end));
-});
+readdirSync(PACKAGES_PATH)
+  .filter(isTypescriptFolder)
+  .reduce((acc, name) => [...acc, createPackage(name)], [])
+  .forEach(p => {
+    log.start(`Generating ${p.name}...`);
+    p.compile().then(() => {
+      log.end(`Completed ${p.name} package`);
+    });
+  });

@@ -5,6 +5,5 @@
   "module": "./esm5/core.js",
   "es2015": "./esm2015/core.js",
   "typings": "./core.d.ts",
-  "author": "Lorenzo D'Ianni",
   "license": "MIT"
 }
