@@ -1,9 +1,12 @@
 {
   "name": "hero-animation",
   "version": "0.1.0",
-  "author": "Lorenzo D'Ianni",
+  "author": "Synthetic Project",
   "license": "MIT",
+  "scripts": {
+    "lerna": "lerna"
+  },
   "devDependencies": {
-    "lerna": "^3.0.3"
+    "lerna": "^3.4.0"
   }
 }
