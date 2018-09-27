@@ -5,6 +5,9 @@
   "main": "./lib/bundles/angularjs.umd.js",
   "module": "./lib/esm5/angularjs.js",
   "es2015": "./lib/esm2015/angularjs.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "webpack --mode=development -w & live-server dist",
     "build": "rollup -c"

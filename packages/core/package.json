@@ -5,6 +5,9 @@
   "main": "./lib/bundles/core.umd.js",
   "module": "./lib/esm5/core.js",
   "es2015": "./lib/esm2015/core.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "jest",
     "build": "rollup -c"
