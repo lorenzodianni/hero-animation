@@ -1,4 +1,4 @@
-import {HeroAnimation} from '../../core';
+import {HeroAnimation} from '@hero-animation/core';
 
 const NG_ENTER = 'enter';
 const NG_LEAVE = 'leave';

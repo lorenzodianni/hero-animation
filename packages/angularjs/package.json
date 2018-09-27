@@ -1,14 +1,18 @@
 {
-  "name": "test",
+  "name": "@hero-animation/angularjs",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Hero Animation AngularJS library",
+  "main": "./lib/bundles/core.umd.js",
+  "module": "./lib/esm5/core.js",
+  "es2015": "./lib/esm2015/core.js",
   "scripts": {
     "start": "webpack --mode=development -w & live-server dist"
   },
-  "author": "",
+  "author": "Synthetic Project",
   "license": "ISC",
+  "homepage": "https://github.com/synthetic-project/hero-animation",
   "dependencies": {
+    "@hero-animation/core": "^1.0.0",
     "@uirouter/angularjs": "^1.0.19",
     "angular": "^1.7.2",
     "angular-animate": "^1.7.2",
