@@ -1,9 +1,37 @@
 {
   "name": "@hero-animation/core",
-  "version": "0.0.0-PLACEHOLDER",
-  "main": "./bundles/core.umd.js",
-  "module": "./esm5/core.js",
-  "es2015": "./esm2015/core.js",
-  "typings": "./core.d.ts",
-  "license": "MIT"
+  "version": "1.0.0",
+  "description": "Hero Animation Core library",
+  "main": "./lib/bundles/core.umd.js",
+  "module": "./lib/esm5/core.js",
+  "es2015": "./lib/esm2015/core.js",
+  "scripts": {
+    "test": "jest",
+    "build": "rollup -c"
+  },
+  "devDependencies": {
+    "@babel/cli": "~7.1.0",
+    "@babel/core": "~7.1.0",
+    "@babel/preset-env": "~7.1.0",
+    "babel-core": "~7.0.0-bridge.0",
+    "babel-jest": "~23.6.0",
+    "jest": "~23.6.0",
+    "rollup": "~0.66.2",
+    "rollup-plugin-babel": "~4.0.3",
+    "rollup-plugin-commonjs": "~9.1.8",
+    "rollup-plugin-node-resolve": "~3.4.0",
+    "rollup-plugin-sourcemaps": "~0.4.2"
+  },
+  "author": "Lorenzo D'Ianni",
+  "license": "MIT",
+  "jest": {
+    "collectCoverage": false,
+    "collectCoverageFrom": [
+      "packages/**/*.(spec).{js}",
+      "!**/node_modules/**"
+    ],
+    "roots": [
+      "./"
+    ]
+  }
 }

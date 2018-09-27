@@ -1,27 +1,11 @@
-import { Animator } from './animator';
-import { ensureFunction } from './common';
-
-export interface HeroAnimationConfig {
-  onInit?: Function;
-  onAnimationStart?: Function;
-  onAnimationEnd?: Function;
-  onDestroy?: Function;
-}
+import {Animator} from './animator';
+import {ensureFunction} from './common';
 
 export const HERO_SELECTOR = 'hero-id';
 
 export class HeroAnimation {
-  private readonly onInit: Function;
-  private readonly onAnimationStart: Function;
-  private readonly onAnimationEnd: Function;
-  private readonly onDestroy: Function;
 
-  private isRunningPrevAnimation: boolean;
-  private fromView: HTMLElement | null;
-  private toView: HTMLElement | null;
-  private animatorList: Animator[];
-
-  constructor({onInit, onAnimationStart, onAnimationEnd, onDestroy}: HeroAnimationConfig = {}) {
+  constructor({onInit, onAnimationStart, onAnimationEnd, onDestroy} = {}) {
     this.onInit = ensureFunction(onInit);
     this.onAnimationStart = ensureFunction(onAnimationStart);
     this.onAnimationEnd = ensureFunction(onAnimationEnd);
@@ -43,27 +27,27 @@ export class HeroAnimation {
     this.onDestroy();
   }
 
-  animate(from: HTMLElement, to: HTMLElement) {
+  animate(from, to) {
     if (this.isRunningPrevAnimation) {
       this.destroy();
     }
     this.fromView = from;
     this.toView = to;
     return this.startHeroAnimation()
-    .then(() => this.destroy())
-    .catch(() => this.destroy());
+      .then(() => this.destroy())
+      .catch(() => this.destroy());
   }
 
   startHeroAnimation() {
     this.isRunningPrevAnimation = true;
     this.onAnimationStart();
-    const from = (this.fromView as HTMLElement).querySelectorAll(`[${HERO_SELECTOR}]`);
-    const to = (this.toView as HTMLElement).querySelectorAll(`[${HERO_SELECTOR}]`);
-    const pairs: Array<{from: HTMLElement, to: HTMLElement}> = [];
+    const from = this.fromView.querySelectorAll(`[${HERO_SELECTOR}]`);
+    const to = this.toView.querySelectorAll(`[${HERO_SELECTOR}]`);
+    const pairs = [];
     for (let n = 0; n < from.length; n++) {
       for (let m = 0; m < to.length; m++) {
         if (from[n].getAttribute(HERO_SELECTOR) === to[m].getAttribute(HERO_SELECTOR)) {
-          pairs.push({from: <HTMLElement>from[n], to: <HTMLElement>to[m]});
+          pairs.push({from: from[n], to: to[m]});
         }
       }
     }
@@ -71,9 +55,9 @@ export class HeroAnimation {
     return Promise.all(animations).then(() => this.onAnimationEnd());
   }
 
-  animateElement(fromElement: HTMLElement, toElement: HTMLElement) {
+  animateElement(fromElement, toElement) {
     return new Promise((resolve) => {
-      const animator = new Animator(fromElement, toElement, <HTMLElement>this.fromView, <HTMLElement>this.toView);
+      const animator = new Animator(fromElement, toElement);
       this.animatorList.push(animator);
       requestAnimationFrame(() => {
         animator.move().then(() => resolve());

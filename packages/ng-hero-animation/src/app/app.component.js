@@ -4,7 +4,7 @@ const template = `
 .hero-animation {
     position: absolute;
     transform-style: preserve-3d;
-    transition: opacity ease-in-out 500ms;
+    transition: opacity ease-in-out 380ms;
     top: 0;
     right: 0;
     bottom: 0;
@@ -18,20 +18,23 @@ const template = `
 }
 .hero-animation__animator {
     transform-style: preserve-3d;
-    transition: all ease-in-out 500ms;
+    transition: all ease-in-out 380ms;
     position: absolute;
     z-index: 10000;
 }
 </style>
-<header>
-  <nav>
-    <a ng-repeat="link in $ctrl.links" ui-sref="{{link.state}}">{{link.label}}</a>
-  </nav>
-</header>
 <main>
+  <header>
+    <nav>
+      <a ng-repeat="link in $ctrl.links" ui-sref="{{link.state}}">{{link.label}}</a>
+    </nav>
+  </header>
+  <main>
     <div ui-view class="hero-animation"></div>
+  </main>
 </main>
 `;
+
 
 class Controller {
   $onInit() {
