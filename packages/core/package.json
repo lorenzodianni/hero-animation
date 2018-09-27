@@ -1,6 +1,6 @@
 {
   "name": "@hero-animation/core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Hero Animation Core library",
   "main": "./lib/bundles/core.umd.js",
   "module": "./lib/esm5/core.js",
