@@ -6,21 +6,27 @@
   "module": "./lib/esm5/core.js",
   "es2015": "./lib/esm2015/core.js",
   "scripts": {
-    "start": "webpack --mode=development -w & live-server dist"
+    "start": "webpack --mode=development -w & live-server dist",
+    "build": "rollup -c"
   },
   "author": "Synthetic Project",
   "license": "ISC",
   "homepage": "https://github.com/synthetic-project/hero-animation",
   "dependencies": {
     "@hero-animation/core": "^1.0.0",
-    "@uirouter/angularjs": "^1.0.19",
     "angular": "^1.7.2",
-    "angular-animate": "^1.7.2",
-    "angular-modal-service": "^0.13.0"
+    "angular-animate": "^1.7.2"
   },
   "devDependencies": {
-    "live-server": "^1.2.0",
-    "webpack": "^4.16.1",
-    "webpack-cli": "^3.1.0"
+    "@babel/cli": "~7.1.0",
+    "@babel/core": "~7.1.0",
+    "@babel/preset-env": "~7.1.0",
+    "babel-core": "~7.0.0-bridge.0",
+    "babel-jest": "~23.6.0",
+    "rollup": "~0.66.2",
+    "rollup-plugin-babel": "~4.0.3",
+    "rollup-plugin-commonjs": "~9.1.8",
+    "rollup-plugin-node-resolve": "~3.4.0",
+    "rollup-plugin-sourcemaps": "~0.4.2"
   }
 }

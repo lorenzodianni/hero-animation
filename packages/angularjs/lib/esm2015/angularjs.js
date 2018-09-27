@@ -1,5 +1,5 @@
-import * as angular from 'angular';
-import {HeroAnimation} from '@hero-animation/core';
+import { module as module$1 } from 'angular';
+import { HeroAnimation } from '@hero-animation/core';
 
 const NG_ENTER = 'enter';
 const NG_LEAVE = 'leave';
@@ -75,7 +75,8 @@ class NgHeroAnimation {
   }
 }
 
-export default angular
-  .module('ngHeroAnimation', ['ngAnimate'])
+var index = module$1('ngHeroAnimation', ['ngAnimate'])
   .animation(ANIMATION_SELECTOR, ['$animateCss', NgHeroAnimation])
   .name;
+
+export default index;
