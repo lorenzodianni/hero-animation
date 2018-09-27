@@ -2,9 +2,9 @@
   "name": "@hero-animation/angularjs",
   "version": "1.0.0",
   "description": "Hero Animation AngularJS library",
-  "main": "./lib/bundles/core.umd.js",
-  "module": "./lib/esm5/core.js",
-  "es2015": "./lib/esm2015/core.js",
+  "main": "./lib/bundles/angularjs.umd.js",
+  "module": "./lib/esm5/angularjs.js",
+  "es2015": "./lib/esm2015/angularjs.js",
   "scripts": {
     "start": "webpack --mode=development -w & live-server dist",
     "build": "rollup -c"
